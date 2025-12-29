@@ -3,6 +3,9 @@ name = "fastapi-app"
 version = "0.1.0"
 description = "FastAPI template with MongoDB + Beanie"
 requires-python = ">=3.12"
+authors = [
+    { name = "Uzair Ahmed", email = "uzer-ab@github" }
+]
 dependencies = [
     "fastapi[standard]",
     "beanie>=1.25,<1.29.0",
@@ -16,6 +19,11 @@ dependencies = [
     "user-agents>=2.2.0",
     "pytz>=2025.2",
 ]
+
+[project.urls]
+Homepage = "https://github.com/uzer-ab/fastapi-mongo-starter"
+Repository = "https://github.com/uzer-ab/fastapi-mongo-starter"
+Issues = "https://github.com/uzer-ab/fastapi-mongo-starter/issues"
 
 [build-system]
 requires = ["hatchling"]

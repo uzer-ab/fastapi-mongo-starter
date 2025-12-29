@@ -1,352 +1,456 @@
-# FastAPI Template (MongoDB)
+<div align="center">
 
-Production-ready FastAPI template with MongoDB (Beanie ODM), JWT authentication, session management, admin panel, and comprehensive logging.
+# FastAPI MongoDB Starter
 
-## Features
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-00a393?style=flat&logo=fastapi)](https://fastapi.tiangolo.com)
+[![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org)
+[![MongoDB](https://img.shields.io/badge/MongoDB-6.0+-47A248?style=flat&logo=mongodb&logoColor=white)](https://www.mongodb.com)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-- **Async MongoDB** with Beanie ODM (User/Session models with refresh tokens)
-- **JWT Authentication** (15min access + 30Days refresh tokens)
-- **Session Management** (device fingerprinting, IP tracking, bulk revocation)
-- **Role-based Access** (USER/ADMIN with `require_admin` dependency)
-- **API Versioning** (`/api/v1/` with APIRouter)
-- **Pydantic Validation** (schemas for requests/responses)
+A scalable FastAPI template with MongoDB, JWT authentication, session management, and role-based access control. Built for production with security best practices and comprehensive logging.
 
-## 📁 Directory Structure
+</div>
 
-```
-├── app
-│   ├── api
-│   │   ├── __init__.py
-│   │   └── v1
-│   │       ├── __init__.py
-│   │       └── routers
-│   │           ├── admin.py
-│   │           ├── auth.py
-│   │           ├── __init__.py
-│   │           └── users.py
-│   ├── core
-│   │   ├── app_config.py
-│   │   ├── config.py
-│   │   ├── db.py
-│   │   ├── exception_handlers.py
-│   │   ├── health.py
-│   │   ├── __init__.py
-│   │   └── middleware.py
-│   ├── dependencies.py
-│   ├── __init__.py
-│   ├── main.py
-│   ├── middleware
-│   │   └── http_logger.py
-│   ├── models
-│   │   ├── __init__.py
-│   │   ├── role.py
-│   │   ├── session.py
-│   │   └── user.py
-│   ├── schemas
-│   │   ├── auth.py
-│   │   ├── __init__.py
-│   │   └── user.py
-│   ├── services
-│   │   └── session_service.py
-│   └── utils
-│       ├── auth.py
-│       ├── formatter.py
-│       ├── logging.py
-│       └── user_agent.py
-├── example.env
-├── LICENSE
-├── logs
-│   └── app.log
-├── pyproject.toml
-├── README.md
-└── uv.lock
-```
+---
+
+## ✨ Features
+
+<table>
+<tr>
+<td width="50%">
+
+### 🔐 Authentication & Security
+
+- **JWT Dual-Token System**
+  - Access tokens (15 min)
+  - Refresh tokens (30 days)
+- **Argon2 Password Hashing**
+- **HttpOnly Cookie Protection**
+- **Session Management**
+- **Device Fingerprinting**
+- **IP Address Tracking**
+
+</td>
+<td width="50%">
+
+### 🏗 Architecture & Features
+
+- **Async MongoDB with Beanie ODM**
+- **Role-Based Access Control (RBAC)**
+- **API Versioning** (`/api/v1`)
+- **Pydantic Validation**
+- **Comprehensive Logging**
+- **Health Check Endpoints**
+- **Soft-Delete Pattern**
+
+</td>
+</tr>
+</table>
+
+---
 
 ## 🚀 Quick Start
 
-1. **Copy environment**: `cp example.env .env`
-2. **Edit `.env`**:
+### Prerequisites
 
+- Python 3.12+
+- MongoDB 6.0+
+- [uv](https://github.com/astral-sh/uv) (recommended) or pip
+
+### Installation
+
+```bash
+# 1. Clone the repository
+git clone <your-repo-url>
+cd fastapi-mongo-starter
+
+# 2. Set up environment variables
+cp env.example .env
+
+# 3. Edit .env with your configuration
+nano .env
+
+# 4. Install dependencies
+uv sync
+
+# 5. Run the server
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+# 6. Access the API documentation
+# Swagger UI: http://localhost:8000/docs
+# ReDoc: http://localhost:8000/redoc
 ```
-   - MONGO_URL=
-   - MONGODB_NAME=
-   - SECRET_KEY=
-   - HOST=0.0.0.0
-   - PORT=8000
-   - WORKERS=4
-   - ENVIRONMENT="devlopment"
+
+### 🐳 Docker Setup (Quick Start)
+
+```bash
+# 1. Clone the repository
+git clone <your-repo-url>
+cd fastapi-mongo-starter
+
+# 2. Set up environment variables
+cp .env.example .env
+
+# 3. Edit .env with your configuration (if needed)
+nano .env
+
+# 4. Start with Docker Compose
+docker-compose up -d
+
+# 5. Access the API
+# Swagger UI: http://localhost:8000/docs
+# ReDoc: http://localhost:8000/redoc
 ```
 
-3. **Install dependencies**: `uv sync`
+The Docker setup includes:
 
-4. **Run server**: `uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4`
+- FastAPI application container
+- MongoDB 6.0 container
+- Automatic database initialization
+- Volume persistence for data
+- Network isolation
 
-5. **Open docs**: - Swagger: `http://localhost:8000/docs`
+For detailed Docker setup instructions and troubleshooting, see [DOCKER_SETUP.md](DOCKER_SETUP.md) and [DOCKER_QUICKSTART.md](DOCKER_QUICKSTART.md).
+
+---
+
+### Environment Configuration
+
+Create a `.env` file with the following variables:
+
+```env
+# Required
+MONGO_URL=mongodb://localhost:27017
+MONGODB_NAME=your_database_name
+SECRET_KEY=your-secret-key-min-32-chars
+
+# Optional
+HOST=0.0.0.0
+PORT=8000
+WORKERS=4
+ENVIRONMENT=development
+```
+
+<details>
+<summary><b>Environment Variables Reference</b></summary>
+
+| Variable       | Required | Default           | Description                              |
+| -------------- | -------- | ----------------- | ---------------------------------------- |
+| `MONGO_URL`    | ✅       | -                 | MongoDB connection string                |
+| `MONGODB_NAME` | ✅       | -                 | Database name                            |
+| `SECRET_KEY`   | ✅       | auto-generated    | JWT signing key (min 32 chars)           |
+| `HOST`         | ❌       | `0.0.0.0`         | Server bind address                      |
+| `PORT`         | ❌       | `8000`            | Server port                              |
+| `WORKERS`      | ❌       | `cpu_count * 1.4` | Uvicorn workers                          |
+| `ENVIRONMENT`  | ❌       | `development`     | Environment (`development`/`production`) |
+
+</details>
+
+---
 
 ## 🔑 API Endpoints
 
-### Root
+### 🏥 Health & Status
 
-```
-GET  /health                      # health check
-GET  /ready                       # readiness check
-GET  /                            # root endpoint
-```
-
-### Authentication
-
-```
-POST /api/v1/auth/register     # username + email + password → create new user
-POST /api/v1/auth/login        # email/username + password → access & refresh tokens
-POST /api/v1/auth/refresh      # refresh_token → new access
-POST /api/v1/auth/logout       # Bearer token → revoke session
+```http
+GET  /                # Root endpoint
+GET  /health          # Basic health check
+GET  /ready           # Readiness check (DB connection)
 ```
 
-### User
+### 🔐 Authentication
+
+<table>
+<tr>
+<th>Endpoint</th>
+<th>Method</th>
+<th>Description</th>
+<th>Auth Required</th>
+</tr>
+<tr>
+<td><code>/api/v1/auth/register</code></td>
+<td>POST</td>
+<td>Create new user account</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><code>/api/v1/auth/login</code></td>
+<td>POST</td>
+<td>Authenticate and receive tokens</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><code>/api/v1/auth/refresh</code></td>
+<td>POST</td>
+<td>Refresh access token</td>
+<td>🍪 Cookie</td>
+</tr>
+<tr>
+<td><code>/api/v1/auth/logout</code></td>
+<td>POST</td>
+<td>Revoke session and clear tokens</td>
+<td>✅ Bearer</td>
+</tr>
+</table>
+
+### 👤 User Management
+
+<table>
+<tr>
+<th>Endpoint</th>
+<th>Method</th>
+<th>Description</th>
+<th>Role</th>
+</tr>
+<tr>
+<td><code>/api/v1/user/</code></td>
+<td>GET</td>
+<td>Get current user profile</td>
+<td>USER</td>
+</tr>
+<tr>
+<td><code>/api/v1/user/</code></td>
+<td>PUT</td>
+<td>Update current user profile</td>
+<td>USER</td>
+</tr>
+<tr>
+<td><code>/api/v1/user/</code></td>
+<td>DELETE</td>
+<td>Delete current user account</td>
+<td>USER</td>
+</tr>
+</table>
+
+### 🛡 Admin Panel
+
+<table>
+<tr>
+<th>Endpoint</th>
+<th>Method</th>
+<th>Description</th>
+<th>Role</th>
+</tr>
+<tr>
+<td><code>/api/v1/admin/users</code></td>
+<td>GET</td>
+<td>List all users (paginated)</td>
+<td>ADMIN</td>
+</tr>
+<tr>
+<td><code>/api/v1/admin/{user_id}</code></td>
+<td>PUT</td>
+<td>Update any user</td>
+<td>ADMIN</td>
+</tr>
+<tr>
+<td><code>/api/v1/admin/{user_id}</code></td>
+<td>DELETE</td>
+<td>Delete any user</td>
+<td>ADMIN</td>
+</tr>
+</table>
+
+---
+
+## 📁 Project Structure
 
 ```
-GET /api/v1/user/              # read current user (Bearer token)
-PUT /api/v1/user/              # update current user (Bearer token)
-DELETE /api/v1/user/           # delete current user (Bearer token)
+fastapi-mongo-starter/
+├── app/
+│   ├── api/
+│   │   └── v1/
+│   │       └── routers/
+│   │           ├── auth.py          # Authentication endpoints
+│   │           ├── users.py         # User management
+│   │           └── admin.py         # Admin operations
+│   │
+│   ├── core/
+│   │   ├── app_config.py           # FastAPI app configuration
+│   │   ├── config.py               # Environment settings
+│   │   ├── db.py                   # Database connection
+│   │   ├── middleware.py           # Custom middleware
+│   │   ├── exception_handlers.py   # Global error handling
+│   │   └── health.py               # Health check endpoints
+│   │
+│   ├── models/
+│   │   ├── user.py                 # User database model
+│   │   ├── session.py              # Session tracking model
+│   │   └── role.py                 # Role & permissions model
+│   │
+│   ├── schemas/
+│   │   ├── auth.py                 # Auth request/response schemas
+│   │   └── user.py                 # User data schemas
+│   │
+│   ├── services/
+│   │   └── session_service.py      # Session management logic
+│   │
+│   ├── utils/
+│   │   ├── auth.py                 # JWT utilities
+│   │   ├── user_agent.py           # Device fingerprinting
+│   │   ├── logging.py              # Logging configuration
+│   │   └── formatter.py            # Response formatting
+│   │
+│   ├── middleware/
+│   │   └── http_logger.py          # HTTP request/response logging
+│   │
+│   ├── dependencies.py             # FastAPI dependencies
+│   └── main.py                     # Application entry point
+│
+├── logs/
+│   └── app.log                     # Application logs
+├── docker-compose.yml              # Docket compose
+├── Dockerfile
+├── DOCKER_QUICKSTART.md            # Quik guide to setup docker for project
+├── DOCKER_SETUP.md                 # Guide to setup docket for project
+├── example.env                     # Environment template
+├── pyproject.toml                  # Project dependencies
+└── README.md
 ```
 
-### Admin
+---
 
-```
-GET /api/v1/admin/users?page=1&size=10      # list all users (admin, Bearer token, pagination)
-PUT /api/v1/admin/{user_id}                 # update specific user by ID (admin, Bearer token)
-DELETE /api/v1/admin/{user_id}              # delete specific user by ID (admin, Bearer token)
-```
+## 🏛 Architecture
 
-## 🛠 Environment Variables
+### Database Models
 
-| Variable       | Required | Default       | Description                 |
-| -------------- | -------- | ------------- | --------------------------- |
-| `MONGO_URL`    | ✅       | -             | MongoDB connection string   |
-| `MONGODB_NAME` | ✅       | -             | Database name               |
-| `SECRET_KEY`   | ✅       | auto-gen      | JWT signing key (32+ chars) |
-| `HOST`         | ❌       | `0.0.0.0`     | Bind address                |
-| `PORT`         | ❌       | `8000`        | Server port                 |
-| `WORKERS`      | ❌       | `cpu*1.4`     | Uvicorn workers             |
-| `ENVIRONMENT`  | ❌       | `development` | Project Environment         |
+#### 👤 User Model
 
-## 🏗 Development Workflow
-
-1. **Add new router**: `app/api/v1/routers/new_feature.py`
-2. **Mount in main.py**: `app.include_router(new_feature.router, prefix="/api/v1/new", tags=["new"])`
-3. **Add schemas**: `app/schemas/new_feature.py`
-4. **Add service**: `app/services/new_feature_service.py`
-
-## 📦 Dependencies (pyproject.toml)
-
-```
-[project]
-name = "fastapi-app"
-version = "0.1.0"
-description = "FastAPI template with MongoDB + Beanie"
-requires-python = ">=3.12"
-dependencies = [
-    "fastapi[standard]",
-    "beanie>=1.25,<1.29.0",
-    "motor",
-    "pydantic-settings",
-    "python-multipart",
-    "uvicorn[standard]",
-    "python-jose[cryptography]>=3.5.0",
-    "argon2-cffi>=25.1.0",
-    "passlib[argon2]>=1.7.4",
-    "user-agents>=2.2.0",
-    "pytz>=2025.2",
-]
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["app"]
+```python
+{
+  "id": "uuid",
+  "username": "string (unique, indexed)",
+  "email": "string (unique, indexed)",
+  "full_name": "string (optional)",
+  "password": "string (Argon2 hashed)",
+  "role": "Link<Role>",
+  "is_active": "boolean",
+  "created_at": "datetime"
+}
 ```
 
-| Package                   | Purpose               | Version        |
-| ------------------------- | --------------------- | -------------- |
-| fastapi[standard]         | Web framework         | Latest         |
-| beanie                    | MongoDB ODM           | `≥1.25, <1.29` |
-| motor                     | Async MongoDB         | Latest         |
-| pydantic-settings         | Config management     | Latest         |
-| python-jose[cryptography] | JWT tokens            | `≥3.5.0`       |
-| passlib[argon2]           | Password hashing      | `≥1.7.4`       |
-| argon2-cffi               | Argon2 implementation | `≥25.1.0`      |
-| user-agents               | Device fingerprinting | `≥2.2.0`       |
-| uvicorn[standard]         | ASGI server           | Latest         |
-| python-multipart          | Form data parsing     | Latest         |
-| pytz                      | Timezone handling     | `≥2025.2`      |
+#### 🔑 Session Model
+
+```python
+{
+  "id": "uuid (session_id)",
+  "user_id": "uuid",
+  "refresh_jti": "uuid (JWT ID for rotation)",
+  "device_info": "string (parsed user agent)",
+  "ip_address": "string",
+  "user_agent": "string (raw)",
+  "expires_at": "datetime",
+  "is_active": "boolean",
+  "created_at": "datetime",
+  "last_activity": "datetime"
+}
+```
+
+#### 🛡 Role Model
+
+```python
+{
+  "id": "uuid",
+  "name": "USER | ADMIN | SUPER_ADMIN",
+  "description": "string",
+  "permissions": ["string[]"],
+  "is_active": "boolean",
+  "created_at": "datetime"
+}
+```
+
+### Token Architecture
+
+<table>
+<tr>
+<th width="50%">Access Token</th>
+<th width="50%">Refresh Token</th>
+</tr>
+<tr>
+<td>
+
+**Storage:** Authorization header
+**Lifetime:** 15 minutes
+**Claims:**
+
+```json
+{
+  "uid": "user-id",
+  "sid": "session-id",
+  "type": "access",
+  "exp": "timestamp"
+}
+```
+
+</td>
+<td>
+
+**Storage:** HttpOnly cookie
+**Lifetime:** 30 days
+**Claims:**
+
+```json
+{
+  "uid": "user-id",
+  "sid": "session-id",
+  "jti": "jwt-id",
+  "type": "refresh",
+  "exp": "timestamp"
+}
+```
+
+</td>
+</tr>
+</table>
+
+---
 
 ## 🔒 Security Features
 
-- **Argon2** password hashing with automatic rehashing
-- **Dual JWT tokens** (access + refresh) with hybrid storage
-- **Session validation** (DB + token double-check)
-- **Device fingerprinting** (browser/OS/IP)
-- **Soft-delete** users + auto-session cleanup
-- **Role-based access control** (RBAC)
-- **Refresh token rotation** with JTI tracking
-- **HttpOnly cookies** for refresh tokens
-- **Bearer authentication** for access tokens
+### Authentication & Authorization
 
-## Token Architecture
+- ✅ **Argon2 Password Hashing** - Industry-standard, memory-hard hashing algorithm
+- ✅ **Automatic Password Rehashing** - Updates passwords to stronger parameters when needed
+- ✅ **JWT Dual-Token System** - Separate access and refresh tokens
+- ✅ **HttpOnly Cookies** - XSS protection for refresh tokens
+- ✅ **Token Rotation** - Unique JTI for each refresh token prevents replay attacks
+- ✅ **Session Validation** - Database-backed session verification (not just JWT)
+- ✅ **Role-Based Access Control** - Granular permission system with wildcards
 
-### Access Token
+### Session Security
 
-- **Storage**: Bearer token in Authorization header
-- **Lifetime**: Short-lived (typically 15 minutes)
-- **Claims**: `uid` (user ID), `sid` (session ID), `type: "access"`
-- **Purpose**: Authorizes API requests
+- ✅ **Device Fingerprinting** - Track browser, OS, and device type
+- ✅ **IP Address Tracking** - Monitor session locations
+- ✅ **Session Revocation** - Instantly invalidate sessions
+- ✅ **Bulk Session Cleanup** - Revoke all user sessions
+- ✅ **Automatic Expiration** - Clean up expired sessions
+- ✅ **Soft Delete** - Users marked inactive instead of deleted
 
-### Refresh Token
+---
 
-- **Storage**: HttpOnly cookie (XSS protection)
-- **Lifetime**: Long-lived (typically 7-30 days)
-- **Claims**: `uid`, `sid`, `jti` (JWT ID for rotation), `type: "refresh"`
-- **Purpose**: Issues new access tokens without re-authentication
+## 🔄 Authentication Flows
 
-## Security Mechanisms
-
-**Token Rotation**
-The implementation uses `jti` (JWT ID) in refresh tokens to enable token rotation, where each refresh operation invalidates the old token and issues a new one, preventing replay attacks.
-
-**Multi-Layer Validation**
-The logout endpoint accepts tokens from multiple sources (Authorization header or cookie), ensuring users can log out even if one token type is compromised.
-
-**Session Tracking**
-Both tokens share the same `sid` (session ID), allowing server-side session revocation and tracking across devices using the device fingerprinting data.
-
-**Defense in Depth**
-
-- HttpOnly cookies prevent XSS token theft
-- Bearer tokens enable mobile/API client support
-- Database session validation catches compromised tokens
-- IP and user-agent tracking detects suspicious activity
-
-## 🧪 User Creation Payload & Route
-
-### Create User
-
-#### Curl
+### Registration Flow
 
 ```
-curl --location 'http://127.0.0.1:8000/api/v1/auth/register' \
---header 'Content-Type: application/json' \
---data-raw '{
-  "username": "talha",
-  "email": "talha@example.com",
-  "full_name": "Talha",
-  "password": "12345"
-}'
+1. POST /auth/register
+   ↓ username/email + password
+2. Validate input:
+   - Ensure required fields are provided (e.g. username/email, password)
+   ↓
+3. Check existing user:
+   - Search by email OR username
+   - Ensure user doesn't already exist
+   ↓ (not existing)
+4. Hash password (Argon2)
+   ↓
+5. Create user:
+   - Save user data (username/email, hashed password)
+   - Assign default role (e.g. "user")
+   ↓
+6. Return response:
+   - Return user data in JSON
 ```
-
-#### Response (201 Created)
-
-```
-{
-    "code": 0,
-    "message": "User registered successfully",
-    "data": {
-        "username": "talha",
-        "email": "talha@example.com",
-        "full_name": "Talha",
-        "role": {
-            "_id": "d85e6420-53c5-46bf-9938-977748d9d4e3",
-            "name": "USER",
-            "description": "Regular user with self-service capabilities",
-            "permissions": [
-                "user:*"
-            ],
-            "is_active": true,
-            "created_at": "2025-12-27T18:58:43.913000Z"
-        },
-        "id": "fa0da95f-8ebe-45ac-b32a-9bd6fc4e1e90",
-        "is_active": true,
-        "created_at": "2025-12-27T19:04:57.690754Z"
-    }
-}
-
-```
-
-### Login User
-
-#### Curl
-
-```
-curl --location 'http://127.0.0.1:8000/api/v1/auth/login' \
---header 'accept: application/json' \
---header 'Content-Type: application/json' \
---data-raw '{
-  "email": "talha@example.com",
-  "password": "12345"
-}'
-```
-
-#### Response (200 OK)
-
-```
-{
-    "code": 0,
-    "message": "Login successful",
-    "data": {
-        "token": {
-            "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJmYTBkYTk1Zi04ZWJlLTQ1YWMtYjMyYS05YmQ2ZmM0ZTFlOTAiLCJzaWQiOiI1OWEyYzI2Ni05NGUyLTQzYmMtYjlhNC1mNDRmOWQzNTQzNWEiLCJ0eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzY2ODY2MTMzfQ.tl1CGdKTh_3S37Cx0aDVwHtxKtbH8XqR9Qa55QysEIY",
-            "expires_in": 900,
-            "token_type": "bearer"
-        },
-        "user": {
-            "username": "talha",
-            "email": "talha@example.com",
-            "full_name": "Talha",
-            "role": {
-                "_id": "d85e6420-53c5-46bf-9938-977748d9d4e3",
-                "name": "USER",
-                "description": "Regular user with self-service capabilities",
-                "permissions": [
-                    "user:*"
-                ],
-                "is_active": true,
-                "created_at": "2025-12-27T18:58:43.913000Z"
-            },
-            "id": "fa0da95f-8ebe-45ac-b32a-9bd6fc4e1e90",
-            "is_active": true,
-            "created_at": "2025-12-27T19:04:57.690000Z"
-        }
-    }
-}
-
-```
-
-### Refresh Token
-
-#### Curl
-
-```
-curl --location --request POST 'http://127.0.0.1:8000/api/v1/auth/refresh' \
---header 'Cookie: refresh_token= Bearer <ACCESS_TOKEN>'
-```
-
-#### Response (200 OK)
-
-```
-{
-    "code": 0,
-    "message": "Token refreshed successfully",
-    "data": {
-        "token": {
-            "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2YWJjY2RlNC1kMzA2LTQ1NDItOTg4Mi1hYmU0MmNlMTRkZDEiLCJzaWQiOiJkMmM2MTk4NC1jZGNkLTQ5ODgtYmVkNS1iZjBmOTY0MTFkOTMiLCJ0eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzY2ODY2MDIyfQ.zsfplOVfnwwt31zTwAaemm2QWgoTd-9mg4tC7eVUf6E",
-            "expires_in": 900,
-            "token_type": "bearer"
-        }
-    }
-}
-```
-
-## 🔄 Session & User Workflow
 
 #### Login → Session Creation Flow
 
@@ -431,3 +535,244 @@ curl --location --request POST 'http://127.0.0.1:8000/api/v1/auth/refresh' \
    -  new access_token in JSON response body
    -  optionally updated refresh_token cookie (if rotating)
 ```
+
+---
+
+## 📚 API Usage Examples
+
+### Register New User
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "johndoe",
+    "email": "john@example.com",
+    "full_name": "John Doe",
+    "password": "SecurePass123!",
+    "role": "USER"
+  }'
+```
+
+<details>
+<summary><b>Response (201 Created)</b></summary>
+
+```json
+{
+  "code": 0,
+  "message": "User registered successfully",
+  "data": {
+    "username": "johndoe",
+    "email": "john@example.com",
+    "full_name": "John Doe",
+    "role": {
+      "_id": "d85e6420-53c5-46bf-9938-977748d9d4e3",
+      "name": "USER",
+      "description": "Regular user with self-service capabilities",
+      "permissions": ["user:*"],
+      "is_active": true,
+      "created_at": "2025-12-27T18:58:43.913000Z"
+    },
+    "id": "fa0da95f-8ebe-45ac-b32a-9bd6fc4e1e90",
+    "is_active": true,
+    "created_at": "2025-12-27T19:04:57.690754Z"
+  }
+}
+```
+
+</details>
+
+### Login
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john@example.com",
+    "password": "SecurePass123!"
+  }'
+```
+
+<details>
+<summary><b>Response (200 OK)</b></summary>
+
+```json
+{
+  "code": 0,
+  "message": "Login successful",
+  "data": {
+    "token": {
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "expires_in": 900,
+      "token_type": "bearer"
+    },
+    "user": {
+      "username": "johndoe",
+      "email": "john@example.com",
+      "full_name": "John Doe",
+      "role": {
+        "_id": "d85e6420-53c5-46bf-9938-977748d9d4e3",
+        "name": "USER",
+        "permissions": ["user:*"],
+        "is_active": true
+      },
+      "id": "fa0da95f-8ebe-45ac-b32a-9bd6fc4e1e90",
+      "is_active": true
+    }
+  }
+}
+```
+
+</details>
+
+### Get Current User
+
+```bash
+curl -X GET "http://localhost:8000/api/v1/user/" \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### Refresh Token
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/auth/refresh" \
+  -H "Cookie: refresh_token=<REFRESH_TOKEN>"
+```
+
+### Logout
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/auth/logout" \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+---
+
+## 🛠 Development
+
+### Adding New Features
+
+1. **Create a new router** in `app/api/v1/routers/`
+
+   ```python
+   from fastapi import APIRouter
+
+   router = APIRouter(prefix="/your-feature", tags=["your-feature"])
+
+   @router.get("/")
+   async def get_items():
+       return {"items": []}
+   ```
+
+2. **Add schemas** in `app/schemas/your_feature.py`
+
+   ```python
+   from pydantic import BaseModel
+
+   class ItemCreate(BaseModel):
+       name: str
+       description: str
+   ```
+
+3. **Create service layer** in `app/services/your_feature_service.py`
+
+   ```python
+   class YourFeatureService:
+       @staticmethod
+       async def create_item(data: dict):
+           # Business logic here
+           pass
+   ```
+
+4. **Register router** in `app/core/app_config.py`
+
+   ```python
+   from app.api.v1.routers import your_feature
+
+   app.include_router(
+       your_feature.router,
+       prefix="/api/v1",
+       tags=["your-feature"]
+   )
+   ```
+
+### Running Tests
+
+```bash
+# Install dev dependencies
+uv sync --dev
+
+# Run tests with pytest
+uv run pytest
+
+# Run with coverage
+uv run pytest --cov=app --cov-report=html
+```
+
+### Code Quality
+
+```bash
+# Format code with black
+uv run black app/
+
+# Sort imports with isort
+uv run isort app/
+
+# Lint with ruff
+uv run ruff check app/
+
+# Type checking with mypy
+uv run mypy app/
+```
+
+---
+
+## 📦 Dependencies
+
+| Package                       | Purpose                  | Version      |
+| ----------------------------- | ------------------------ | ------------ |
+| **fastapi[standard]**         | Web framework            | Latest       |
+| **beanie**                    | MongoDB ODM              | ≥1.25, <1.29 |
+| **motor**                     | Async MongoDB driver     | Latest       |
+| **pydantic-settings**         | Configuration management | Latest       |
+| **python-jose[cryptography]** | JWT encoding/decoding    | ≥3.5.0       |
+| **passlib[argon2]**           | Password hashing library | ≥1.7.4       |
+| **argon2-cffi**               | Argon2 implementation    | ≥25.1.0      |
+| **user-agents**               | User-Agent parsing       | ≥2.2.0       |
+| **uvicorn[standard]**         | ASGI web server          | Latest       |
+| **python-multipart**          | Form data parsing        | Latest       |
+| **pytz**                      | Timezone handling        | ≥2025.2      |
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- [FastAPI](https://fastapi.tiangolo.com/) - Modern web framework
+- [Beanie](https://beanie-odm.dev/) - MongoDB ODM
+- [Argon2](https://github.com/P-H-C/phc-winner-argon2) - Password hashing
+
+---
+
+<div align="center">
+
+[Report Bug](https://github.com/uzer-ab/fastapi-mongo-starter/issues) • [Request Feature](https://github.com/uzer-ab/fastapi-mongo-starter/issues)
+
+</div>
