@@ -10,7 +10,10 @@ from app.core.middleware import setup_middleware
 from app.core.exception_handlers import setup_exception_handlers
 from app.core.health import setup_health_endpoints
 from app.api.v1 import routers
+from app.utils.logging import setup_logging
 
+# Initialize logging
+setup_logging()
 
 log = logging.getLogger("app")
 
