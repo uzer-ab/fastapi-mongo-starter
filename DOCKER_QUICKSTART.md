@@ -34,9 +34,11 @@ docker compose up -d --build
 
 ## Access Points
 
-- API: http://localhost:8000
-- Swagger UI: http://localhost:8000/docs
-- Health Check: http://localhost:8000/health
+> **Note:** The default port is 8000. Change `PORT` in `.env` to use a different port (e.g., `PORT=8001` for port 8001 on the host).
+
+- API: http://localhost:${PORT:-8000}
+- Swagger UI: http://localhost:${PORT:-8000}/docs
+- Health Check: http://localhost:${PORT:-8000}/health
 
 ## Environment Configuration
 
@@ -53,7 +55,10 @@ docker compose logs fastapi
 ```
 
 **Port 8000 already in use?**
-Change `PORT=8001` in `.env` and restart
+Edit `PORT=8001` in `.env` and run:
+```bash
+docker compose restart
+```
 
 **Need to rebuild completely?**
 ```bash

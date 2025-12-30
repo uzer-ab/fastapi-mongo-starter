@@ -56,7 +56,7 @@ SECRET_KEY=your-super-secret-key-here-change-this-in-production
 
 # Server Configuration
 HOST=0.0.0.0
-PORT=8000
+PORT=8000  # External port (host). Container always uses internal port 8000.
 WORKERS=4
 
 # Environment
@@ -107,8 +107,8 @@ docker compose ps
 Expected output:
 
 ```
-NAME               IMAGE                             STATUS         PORTS
-fastapi_app        fastapi-mongo-starter-fastapi     Up 30 seconds  0.0.0.0:8000->8000/tcp
+NAME                     IMAGE                             STATUS         PORTS
+fastapi_app_mongo        fastapi-mongo-starter-fastapi     Up 30 seconds  0.0.0.0:8000->8000/tcp
 ```
 
 ### 5. View Logs
@@ -125,20 +125,22 @@ Press `Ctrl+C` to exit log viewing.
 
 Once the services are running, you can access:
 
-| Service             | URL                          | Description                   |
-| ------------------- | ---------------------------- | ----------------------------- |
-| **API Root**        | http://localhost:8000        | Root endpoint                 |
-| **Swagger UI**      | http://localhost:8000/docs   | Interactive API documentation |
-| **ReDoc**           | http://localhost:8000/redoc  | Alternative API documentation |
-| **Health Check**    | http://localhost:8000/health | Basic health check            |
-| **Readiness Check** | http://localhost:8000/ready  | Database connection check     |
+> **Note:** Default port is 8000. Change `PORT` in `.env` to use a different port.
+
+| Service             | URL                                        | Description                   |
+| ------------------- | ------------------------------------------ | ----------------------------- |
+| **API Root**        | http://localhost:${PORT:-8000}             | Root endpoint                 |
+| **Swagger UI**      | http://localhost:${PORT:-8000}/docs        | Interactive API documentation |
+| **ReDoc**           | http://localhost:${PORT:-8000}/redoc       | Alternative API documentation |
+| **Health Check**    | http://localhost:${PORT:-8000}/health      | Basic health check            |
+| **Readiness Check** | http://localhost:${PORT:-8000}/ready       | Database connection check     |
 
 ### 7. Test the API
 
 Test the health endpoint:
 
 ```bash
-curl http://localhost:8000/health
+curl http://localhost:${PORT:-8000}/health
 ```
 
 Expected response:
@@ -253,6 +255,8 @@ All configuration is loaded from your `.env` file:
 - `MONGODB_NAME`: Database name
 - `SECRET_KEY`: JWT secret key
 - `HOST`, `PORT`, `WORKERS`: Server configuration
+  - `PORT` controls the **external/host** port (e.g., 8000, 8001)
+  - The container always uses internal port 8000
 - `ENVIRONMENT`: Set to `production` for production mode
 
 ## Troubleshooting

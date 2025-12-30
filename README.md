@@ -95,20 +95,23 @@ cp .env.example .env
 nano .env
 
 # 4. Start with Docker Compose
-docker-compose up -d
+docker compose up -d
 
-# 5. Access the API
+# 5. Access the API (default port 8000)
+# API: http://localhost:8000
 # Swagger UI: http://localhost:8000/docs
 # ReDoc: http://localhost:8000/redoc
+
+# To use a different port, edit PORT in .env
+# e.g., PORT=8001 for http://localhost:8001
 ```
 
 The Docker setup includes:
 
-- FastAPI application container
-- MongoDB 6.0 container
+- FastAPI application container (runs on internal port 8000)
 - Automatic database initialization
-- Volume persistence for data
-- Network isolation
+- Volume persistence for logs
+- Configurable external port via `PORT` in `.env`
 
 For detailed Docker setup instructions and troubleshooting, see [DOCKER_SETUP.md](DOCKER_SETUP.md) and [DOCKER_QUICKSTART.md](DOCKER_QUICKSTART.md).
 
@@ -134,15 +137,15 @@ ENVIRONMENT=development
 <details>
 <summary><b>Environment Variables Reference</b></summary>
 
-| Variable       | Required | Default           | Description                              |
-| -------------- | -------- | ----------------- | ---------------------------------------- |
-| `MONGO_URL`    | ✅       | -                 | MongoDB connection string                |
-| `MONGODB_NAME` | ✅       | -                 | Database name                            |
-| `SECRET_KEY`   | ✅       | auto-generated    | JWT signing key (min 32 chars)           |
-| `HOST`         | ❌       | `0.0.0.0`         | Server bind address                      |
-| `PORT`         | ❌       | `8000`            | Server port                              |
-| `WORKERS`      | ❌       | `cpu_count * 1.4` | Uvicorn workers                          |
-| `ENVIRONMENT`  | ❌       | `development`     | Environment (`development`/`production`) |
+| Variable       | Required | Default           | Description                               |
+| -------------- | -------- | ----------------- | ----------------------------------------- |
+| `MONGO_URL`    | ✅       | -                 | MongoDB connection string                 |
+| `MONGODB_NAME` | ✅       | -                 | Database name                             |
+| `SECRET_KEY`   | ✅       | auto-generated    | JWT signing key (min 32 chars)            |
+| `HOST`         | ❌       | `0.0.0.0`         | Server bind address (inside container)    |
+| `PORT`         | ❌       | `8000`            | External port (host). Container uses 8000 |
+| `WORKERS`      | ❌       | `cpu_count * 1.4` | Uvicorn workers                           |
+| `ENVIRONMENT`  | ❌       | `development`     | Environment (`development`/`production`)  |
 
 </details>
 
